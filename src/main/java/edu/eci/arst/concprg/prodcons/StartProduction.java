@@ -18,12 +18,12 @@ import java.util.logging.Logger;
 public class StartProduction {
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         
         Queue<Integer> queue=new LinkedBlockingQueue<>();
         
         
-        new Producer(queue,Long.MAX_VALUE).start();
+        new Producer(queue,100).start();
         
         //let the producer create products for 5 seconds (stock).
         try {
