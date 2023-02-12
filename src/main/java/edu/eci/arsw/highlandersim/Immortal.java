@@ -2,6 +2,8 @@ package edu.eci.arsw.highlandersim;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Immortal extends Thread {
 
@@ -16,20 +18,71 @@ public class Immortal extends Thread {
     private final String name;
 
     private final Random r = new Random(System.currentTimeMillis());
+    private AtomicInteger dormidos;
+
+    private AtomicBoolean pausado;
+    private final Object objetoHijos;
+    private final Object jefe;
+    private final int siblings;
 
 
-    public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue, ImmortalUpdateReportCallback ucb) {
+    public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue, ImmortalUpdateReportCallback ucb, AtomicInteger dormidos, AtomicBoolean pausado,
+                    Object objetoHijos, int siblings, Object jefe) {
         super(name);
         this.updateCallback=ucb;
         this.name = name;
         this.immortalsPopulation = immortalsPopulation;
         this.health = health;
         this.defaultDamageValue=defaultDamageValue;
+        this.dormidos = dormidos;
+        this.pausado = pausado;
+        System.out.println(pausado);
+        this.objetoHijos = objetoHijos;
+        this.siblings = siblings;
+        this.jefe = jefe;
     }
 
     public void run() {
 
         while (true) {
+            while(pausado.get()){
+
+                synchronized (dormidos){
+                    System.out.println(dormidos);
+                    System.out.println(pausado);
+                    dormidos.getAndAdd(1);
+                    System.out.println(dormidos);
+                }
+
+                if (dormidos.get() < siblings){
+                    synchronized (objetoHijos){
+                        try {
+                            objetoHijos.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                } else{
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    synchronized (jefe){
+                        jefe.notify();
+                        System.out.println("Soy el ultimo");
+                        dormidos.set(0);
+                    }
+                    synchronized (objetoHijos){
+                        try {
+                            objetoHijos.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+
+            }
             Immortal im;
 
             int myIndex = immortalsPopulation.indexOf(this);

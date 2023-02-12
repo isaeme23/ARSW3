@@ -20,6 +20,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.Color;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JScrollBar;
 
 public class ControlFrame extends JFrame {
@@ -35,6 +37,12 @@ public class ControlFrame extends JFrame {
     private JLabel statisticsLabel;
     private JScrollPane scrollPane;
     private JTextField numOfImmortals;
+    private static AtomicBoolean pausado = new AtomicBoolean(false);
+    private static boolean pausadoControl;
+
+    private static final Object objetoJefe = new Object();
+    private static final Object objetoHijos = new Object();
+    private AtomicInteger dormidos = new AtomicInteger(0);
 
     /**
      * Launch the application.
@@ -50,6 +58,20 @@ public class ControlFrame extends JFrame {
                 }
             }
         });
+    }
+
+    public void pausar() throws InterruptedException {
+        pausado.set(true);
+    }
+
+    public void resume(){
+        synchronized (objetoHijos){
+            pausado.set(false);
+            objetoHijos.notifyAll();
+        }
+        synchronized (objetoJefe){
+            objetoJefe.notify();
+        }
     }
 
     /**
@@ -87,6 +109,12 @@ public class ControlFrame extends JFrame {
         JButton btnPauseAndCheck = new JButton("Pause and check");
         btnPauseAndCheck.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                pausadoControl = true;
+                try {
+                    pausar();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
 
                 /*
 				 * COMPLETAR
@@ -111,6 +139,7 @@ public class ControlFrame extends JFrame {
                 /**
                  * IMPLEMENTAR
                  */
+                resume();
 
             }
         });
@@ -152,7 +181,8 @@ public class ControlFrame extends JFrame {
             List<Immortal> il = new LinkedList<Immortal>();
 
             for (int i = 0; i < ni; i++) {
-                Immortal i1 = new Immortal("im" + i, il, DEFAULT_IMMORTAL_HEALTH, DEFAULT_DAMAGE_VALUE,ucb);
+                Immortal i1 = new Immortal("im" + i, il, DEFAULT_IMMORTAL_HEALTH, DEFAULT_DAMAGE_VALUE,ucb, dormidos, pausado,
+                        objetoHijos, ni, objetoJefe);
                 il.add(i1);
             }
             return il;
