@@ -16,11 +16,17 @@ quite un elemento de esta cola en la clase productor.
 
 Parte II
 
-1. El total de la sumatoria de todos los puntos de vida deberia ser N*DEFAULT_IMMORTAL_HEALTH.
+2. El total de la sumatoria de todos los puntos de vida deberia ser N*DEFAULT_IMMORTAL_HEALTH.
 
-2. Cuando se ejecuta el juego y se hace click en el boton de "pause and check", se encuentran datos como las vidas
+3. Cuando se ejecuta el juego y se hace click en el boton de "pause and check", se encuentran datos como las vidas
    de cada inmortal que aún sigue con vida en el juego junto con la sumatoria de los valores de salud de todos los N inmortales
    vivos en ese momento. Cuando hacemos click en el boton, el juego no se detiene y el invariante no se cumple sino que
    este aumenta cada vez que se oprime.
 
-3.
+5. El invariante de nuevo no se cumple aunque los botones de "pause and check" y "resume" funcionen.
+
+6. Condiciones de carrera posibles:
+    a. Dos inmortales atacan al mismo tiempo a otro y suman valores no correspondientes a la salud de cada uno.
+    b. Dos inmortales atacan al mismo tiempo a otro y a este se le resta un valor de salud incorrecto.
+    c. Un inmortal ataca, pero al mismo tiempo este es atacado y si tiene un valor pequeño de salud puede morir si
+    primero resta su valor de salud en vez de sumar el valor obtenido por el ataque.
