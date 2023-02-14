@@ -30,3 +30,14 @@ Parte II
     b. Dos inmortales atacan al mismo tiempo a otro y a este se le resta un valor de salud incorrecto.
     c. Un inmortal ataca, pero al mismo tiempo este es atacado y si tiene un valor pequeño de salud puede morir si
     primero resta su valor de salud en vez de sumar el valor obtenido por el ataque.
+
+7. Al ejecutar el programa y ver el thread dump en visualvm, logramos ver que al final del reporte los hilos vemos que
+todos se han quedado esperando simultáneamente. En cada uno hay un mensaje indicando: "waiting for monitor entry"
+
+8. Después de plantear la estrategia probamos con 100 inmortales y el programa no se detuvo. Debido a limitaciones de
+nuestros computadores no pudimos probarlo con 1000 y 10000 hilos.
+
+9. Una de las condiciones de carrera que podemos ver para este punto es que al atacar inmortales ya muertos y que también
+inmortales muertos ataquen sin salud hace que puedan llegar a revivir, ya que si atacan y ganan suman salud ya cuando
+estaban muertos. También puede ser que dos inmortales ataquen al mismo tiempo a uno muerto o uno muerto ataque al mismo
+tiempo que uno vivo a un inmortal aparte.
