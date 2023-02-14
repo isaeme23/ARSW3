@@ -41,3 +41,10 @@ nuestros computadores no pudimos probarlo con 1000 y 10000 hilos.
 inmortales muertos ataquen sin salud hace que puedan llegar a revivir, ya que si atacan y ganan suman salud ya cuando
 estaban muertos. También puede ser que dos inmortales ataquen al mismo tiempo a uno muerto o uno muerto ataque al mismo
 tiempo que uno vivo a un inmortal aparte.
+    a. Para solucionar esto, usamos una variable booleana para identificar que cada inmortal esta vivo o muerto. Se le
+    da esta variable al crearse y en el metodo fight cuando se vaya a enfrentar a un inmortal y quede con salud 0 no se
+    se le va a dar la variable en false para indicar que esta muerto y usar esta variable en el run para que se acabe la
+    ejecucion del hilo.
+
+10. Para el boton de stop, usamos otra variable atomica para que con la condicion de si su valor cambia a falso todos los
+hilos terminaran su ejecucion y en programa termine. Tambien dehabilitamos a los demas botones cuando se hace clic en stop.

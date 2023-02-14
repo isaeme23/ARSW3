@@ -38,6 +38,7 @@ public class ControlFrame extends JFrame {
     private JScrollPane scrollPane;
     private JTextField numOfImmortals;
     private static AtomicBoolean pausado = new AtomicBoolean(false);
+    private static AtomicBoolean end = new AtomicBoolean(false);
     private static boolean pausadoControl;
 
     private static final Object objetoJefe = new Object();
@@ -62,6 +63,10 @@ public class ControlFrame extends JFrame {
 
     public void pausar() throws InterruptedException {
         pausado.set(true);
+    }
+
+    public void stop() throws InterruptedException {
+        end.set(true);
     }
 
     public void resume(){
@@ -158,6 +163,22 @@ public class ControlFrame extends JFrame {
         btnStop.setForeground(Color.RED);
         toolBar.add(btnStop);
 
+        btnStop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                /**
+                 * IMPLEMENTAR
+                 */
+                try {
+                    stop();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+                btnResume.setEnabled(false);
+                btnStart.setEnabled(false);
+                btnPauseAndCheck.setEnabled(false);
+            }
+        });
+
         scrollPane = new JScrollPane();
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
@@ -182,7 +203,7 @@ public class ControlFrame extends JFrame {
 
             for (int i = 0; i < ni; i++) {
                 Immortal i1 = new Immortal("im" + i, il, DEFAULT_IMMORTAL_HEALTH, DEFAULT_DAMAGE_VALUE,ucb, dormidos, pausado,
-                        objetoHijos, ni, objetoJefe);
+                        objetoHijos, ni, objetoJefe, true, end);
                 il.add(i1);
             }
             return il;
