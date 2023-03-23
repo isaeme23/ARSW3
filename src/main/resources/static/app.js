@@ -8,18 +8,20 @@ var app = (function () {
     }
     
     var stompClient = null;
+    var pt;
 
-    var addPointToCanvas = function (point) {        
-        var canvas = document.getElementById("canvas");
+    var addPointToCanvas = function (point) {
+        console.log("Entra addpoint");
+        var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         ctx.beginPath();
-        ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+        ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
         ctx.stroke();
     };
     
     
     var getMousePosition = function (evt) {
-        canvas = document.getElementById("canvas");
+        canvas = document.getElementById("myCanvas");
         var rect = canvas.getBoundingClientRect();
         return {
             x: evt.clientX - rect.left,
@@ -39,6 +41,10 @@ var app = (function () {
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 var theObject=JSON.parse(eventbody.body);
                 alert(JSON.stringify(theObject));
+                var point = new Point(theObject.x, theObject.y);
+                console.log(eventbody);
+                console.log(point);
+                addPointToCanvas(point);
             });
         });
 
@@ -48,7 +54,36 @@ var app = (function () {
         stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));
     }
 
-    
+    var drawCircle = function(){
+    $(document).ready(function() {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+          if(window.PointerEvent) {
+            canvas.addEventListener("click", function(event){
+                console.log("drawcircle 1");
+                publishPoint(event.pageX, event.pageY);
+            });
+          }
+          else {
+          console.log("drawcircle else entro");
+            canvas.addEventListener("mousedown", function(event){
+                console.log("drawcircle 2");
+                publishPoint(event.pageX, event.pageY);
+            });
+        }
+        });
+    }
+
+    var publishPoint = function(px, py){
+        pt=new Point(px,py);
+        console.info("publishing point at "+pt);
+        console.log("publish")
+        addPointToCanvas(pt);
+        //publicar el evento
+        publishPoints(pt);
+    }
+
+
     
 
     return {
@@ -58,14 +93,7 @@ var app = (function () {
             
             //websocket connection
             connectAndSubscribe();
-        },
-
-        publishPoint: function(px,py){
-            var pt=new Point(px,py);
-            console.info("publishing point at "+pt);
-            addPointToCanvas(pt);
-            //publicar el evento
-            publishPoints(pt);
+            drawCircle();
         },
 
         disconnect: function () {
